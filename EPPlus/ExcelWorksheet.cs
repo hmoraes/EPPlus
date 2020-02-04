@@ -1511,7 +1511,9 @@ namespace OfficeOpenXml
             {
                 string v = xr.ReadElementContentAsString();
                 var nf = Workbook.Styles.CellXfs[styleID].NumberFormatId;
-                if ((nf >= 14 && nf <= 22) || (nf >= 45 && nf <= 47))
+                bool isDateTime = Workbook.Styles.CellXfs[styleID].Numberformat.FormatTranslator.DataType == ExcelNumberFormatXml.eFormatType.DateTime;
+                // judge datytype is DateTime or not by NumberFormatId(some of datetype is custom which id >= 164,but unspecific) or DataType of ExcelFormatTranslator
+                if ((nf >= 14 && nf <= 22) || (nf >= 45 && nf <= 47) || isDateTime)
                 {
                     double res;
                     if (double.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out res))
@@ -4314,7 +4316,7 @@ namespace OfficeOpenXml
 		internal int GetStyleID(string StyleName)
 		{
 			ExcelNamedStyleXml namedStyle=null;
-            Workbook.Styles.NamedStyles.FindByID(StyleName, ref namedStyle);
+            Workbook.Styles.NamedStyles.FindByKey(StyleName, ref namedStyle);
             if (namedStyle.XfId == int.MinValue)
             {
                 namedStyle.XfId=Workbook.Styles.CellXfs.FindIndexByID(namedStyle.Style.Id);

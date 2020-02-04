@@ -48,6 +48,12 @@ namespace EPPlusSamples
                 var v = cell.Value;
                 var t = cell.Text;
                 var format = cell.Style.Numberformat.Format;
+
+                var cell1 = worksheet.Cells[2, 3];
+                var v1 = cell1.Value;
+                var t1 = cell1.Text;
+                var format1 = cell1.Style.Numberformat.Format;
+
             }
 
             try

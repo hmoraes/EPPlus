@@ -1518,7 +1518,14 @@ namespace OfficeOpenXml
                     {
                         if (Workbook.Date1904)
                         {
-                            res += ExcelWorkbook.date1904Offset;
+                            res += ExcelWorkbook.date1904Offset.TotalDays;
+                        }
+                        else
+                        {
+                            if (res < (ExcelWorkbook.march1st1900 - ExcelWorkbook.december31st1899).TotalDays)
+                            {
+                                res += ExcelWorkbook.before1stMarch1900Offset.TotalDays;
+                            }
                         }
                         if (res >= -657435.0 && res < 2958465.9999999)
                         {
@@ -3889,7 +3896,15 @@ namespace OfficeOpenXml
 
                     if (Workbook.Date1904)
                     {
-                        sdv -= ExcelWorkbook.date1904Offset;
+                        sdv -= ExcelWorkbook.date1904Offset.TotalDays;
+                    }
+                    else
+                    {
+                        //handle 1900-01-01 to 1900-02-28 from 1 to 59 for number of excel and for OADate of .NET DateTime from 2 to 60.
+                        if (sdv-1 > 0 && sdv-1 < (ExcelWorkbook.march1st1900 - ExcelWorkbook.december31st1899).TotalDays)
+                        {
+                            sdv -= ExcelWorkbook.before1stMarch1900Offset.TotalDays;
+                        }
                     }
 
                     s = sdv.ToString(CultureInfo.InvariantCulture);
@@ -3898,7 +3913,7 @@ namespace OfficeOpenXml
                 {
                     s = DateTime.FromOADate(0).Add(((TimeSpan)v)).ToOADate().ToString(CultureInfo.InvariantCulture);
                 }
-                else if(TypeCompat.IsPrimitive(v) || v is double || v is decimal)
+                else if (TypeCompat.IsPrimitive(v) || v is double || v is decimal)
                 {
                     if (v is double && double.IsNaN((double)v))
                     {
@@ -4350,14 +4365,20 @@ namespace OfficeOpenXml
             }
         }
 
-        internal void UpdateCellsWithDate1904Setting()
+        internal void UpdateCellsWithDate1904SettingChanged()
         {
             var cse = new CellsStoreEnumerator<ExcelCoreValue>(_values);
-            var offset = Workbook.Date1904 ? -ExcelWorkbook.date1904Offset : ExcelWorkbook.date1904Offset;
+            //1900 to 1904 or 1904 to 1900
+            var offset = Workbook.Date1904 ? -ExcelWorkbook.date1904Offset.TotalDays : ExcelWorkbook.date1904Offset.TotalDays;
             while(cse.MoveNext())
             {
                 if (cse.Value._value is DateTime)
                 {
+                    //if(Workbook.Date1904){
+                    //  if(1899-12-31<cse.Value._value<1900-03-01){}
+                    //}else{
+                    //  if(){}
+                    //}
                     try
                     {
                         double sdv = ((DateTime)cse.Value._value).ToOADate();

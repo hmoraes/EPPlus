@@ -1529,7 +1529,7 @@ namespace OfficeOpenXml
                                 res += ExcelWorkbook.before1stMarch1900Offset.TotalDays;
                             }
                         }
-                        if (res >= -657435.0 && res < 2958465.9999999)
+                        if (res > -657435.0 && res < 2958465.9999999)
                         {
                             SetValueInner(row, col, DateTime.FromOADate(res));
                         }

@@ -643,6 +643,12 @@ namespace OfficeOpenXml
                 {
                     if (_fromRow == _toRow && _fromCol == _toCol)
                     {
+                        //object innerValue = _worksheet.GetValue(_fromRow, _fromCol);
+                        //if (true)
+                        //{
+
+                        //}
+                        //return FormatValue-GetDateValue()
                         return _worksheet.GetValue(_fromRow, _fromCol);
                     }
                     else
@@ -1034,6 +1040,11 @@ namespace OfficeOpenXml
                     var date = DateTime.FromOADate(d);
                     return GetDateText(date, format, nf);
                 }
+                else//ensured all return path by here.
+                {
+                    //return v.ToString();
+                    return v.ToString();
+                }
             }
             else if (v is DateTime)
             {
@@ -1084,16 +1095,16 @@ namespace OfficeOpenXml
                     return string.Format(textFormat, v);
                 }
             }
-            return v.ToString();
+            //return v.ToString();
         }
 
         private static string GetDateText(DateTime d, string format, ExcelNumberFormatXml.ExcelFormatTranslator nf)
         {
-            if(nf.SpecialDateFormat==ExcelNumberFormatXml.ExcelFormatTranslator.eSystemDateFormat.SystemLongDate)
+            if (nf.SpecialDateFormat == ExcelNumberFormatXml.ExcelFormatTranslator.eSystemDateFormat.SystemLongDate)
             {
                 return d.ToLongDateString();
             }
-            else if(nf.SpecialDateFormat == ExcelNumberFormatXml.ExcelFormatTranslator.eSystemDateFormat.SystemLongTime)
+            else if (nf.SpecialDateFormat == ExcelNumberFormatXml.ExcelFormatTranslator.eSystemDateFormat.SystemLongTime)
             {
                 return d.ToLongTimeString();
             }

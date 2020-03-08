@@ -539,20 +539,7 @@ namespace OfficeOpenXml
         }
 
         const string date1904Path = "d:workbookPr/@date1904";
-
-        //1904TimeSystem
-        // offset to fix 1900 and 1904 differences, 4 OLE years.(365.5*4)
-        internal static readonly DateTime january1st1904 = new DateTime(1904, 01, 01);
-        internal static readonly TimeSpan date1904Offset = new TimeSpan(4 * 365 + 2, 0, 0, 0, 0);
-
-        //1900TimeSystem
-        //It turns out that when Lotus 1-2-3 was written, the programmers incorrectly thought that 1900 was a leap year. 
-        //When Microsoft wrote Excel, they wanted to make sure they kept compatibility with existing Lotus 1-2-3 spreadsheets by making it
-        //so that they calculated the number of days elapsed since December 31st, 1899 instead of January 1, 1900.
-        internal static readonly DateTime december31st1899 = new DateTime(1899, 12, 31);
-        internal static readonly DateTime march1st1900 = new DateTime(1900, 03, 01);
-        internal static readonly TimeSpan before1stMarch1900Offset = new TimeSpan(1, 0, 0, 0);
-
+        internal const double date1904Offset = 365.5 * 4;  // offset to fix 1900 and 1904 differences, 4 OLE years
         private bool? date1904Cache = null;
 
         internal bool ExistsPivotCache(int cacheID, ref int newID)
@@ -600,11 +587,11 @@ namespace OfficeOpenXml
                     // Like Excel when the option it's changed update it all cells with Date format
                     foreach (var item in Worksheets)
                     {
-                        item.UpdateCellsWithDate1904SettingChanged();
+                        item.UpdateCellsWithDate1904Setting();
                     }
-                    date1904Cache = value;
-                    SetXmlNodeBool(date1904Path, value, false);
                 }
+                date1904Cache = value;
+                SetXmlNodeBool(date1904Path, value, false);
             }
         }
      

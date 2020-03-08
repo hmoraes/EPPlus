@@ -78,13 +78,6 @@ namespace OfficeOpenXml
                 return _list[PositionID];
             }
         }
-
-        public IEnumerable<T> FindAll()
-        {
-            return _list;
-        }
-
-
         public int Count
         {
             get
@@ -105,25 +98,13 @@ namespace OfficeOpenXml
             if (_setNextIdManual) NextId++;
             return _list.Count-1;
         }
-        ///// <summary>
-        ///// Finds the obj by field 
-        ///// </summary>
-        ///// <param name="id">the id to be found</param>
-        ///// <param name="obj">The found object.</param>
-        ///// <returns>True if found</returns>
-        //internal bool FindByID(int id, ref T obj)
-        //{
-        //    obj = _list.Where(item => item.NumFmtId == id).FirstOrDefault();
-        //    return _list.Where(item => item.NumFmtId == id).Count>0;
-        //}
-
         /// <summary>
-        /// Finds by key 
+        /// Finds the key 
         /// </summary>
         /// <param name="key">the key to be found</param>
         /// <param name="obj">The found object.</param>
         /// <returns>True if found</returns>
-        internal bool FindByKey(string key, ref T obj)
+        internal bool FindByID(string key, ref T obj)
         {
             if (_dic.ContainsKey(key))
             {

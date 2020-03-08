@@ -1511,25 +1511,16 @@ namespace OfficeOpenXml
             {
                 string v = xr.ReadElementContentAsString();
                 var nf = Workbook.Styles.CellXfs[styleID].NumberFormatId;
-                bool isDateTime = Workbook.Styles.CellXfs[styleID].Numberformat.FormatTranslator.DataType == ExcelNumberFormatXml.eFormatType.DateTime;
-                // judge datytype is DateTime or not by NumberFormatId(some of datetype is custom which id >= 164,but unspecific) or DataType of ExcelFormatTranslator
-                if ((nf >= 14 && nf <= 22) || (nf >= 45 && nf <= 47) || isDateTime)
+                if ((nf >= 14 && nf <= 22) || (nf >= 45 && nf <= 47))
                 {
                     double res;
                     if (double.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out res))
                     {
                         if (Workbook.Date1904)
                         {
-                            res += ExcelWorkbook.date1904Offset.TotalDays;
+                            res += ExcelWorkbook.date1904Offset;
                         }
-                        else
-                        {
-                            if (res < (ExcelWorkbook.march1st1900 - ExcelWorkbook.december31st1899).TotalDays)
-                            {
-                                res += ExcelWorkbook.before1stMarch1900Offset.TotalDays;
-                            }
-                        }
-                        if (res > -657435.0 && res < 2958465.9999999)
+                        if (res >= -657435.0 && res < 2958465.9999999)
                         {
                             SetValueInner(row, col, DateTime.FromOADate(res));
                         }
@@ -3898,15 +3889,7 @@ namespace OfficeOpenXml
 
                     if (Workbook.Date1904)
                     {
-                        sdv -= ExcelWorkbook.date1904Offset.TotalDays;
-                    }
-                    else
-                    {
-                        //handle 1900-01-01 to 1900-02-28 from 1 to 59 for number of excel and for OADate of .NET DateTime from 2 to 60.
-                        if (sdv-1 > 0 && sdv-1 < (ExcelWorkbook.march1st1900 - ExcelWorkbook.december31st1899).TotalDays)
-                        {
-                            sdv -= ExcelWorkbook.before1stMarch1900Offset.TotalDays;
-                        }
+                        sdv -= ExcelWorkbook.date1904Offset;
                     }
 
                     s = sdv.ToString(CultureInfo.InvariantCulture);
@@ -3915,7 +3898,7 @@ namespace OfficeOpenXml
                 {
                     s = DateTime.FromOADate(0).Add(((TimeSpan)v)).ToOADate().ToString(CultureInfo.InvariantCulture);
                 }
-                else if (TypeCompat.IsPrimitive(v) || v is double || v is decimal)
+                else if(TypeCompat.IsPrimitive(v) || v is double || v is decimal)
                 {
                     if (v is double && double.IsNaN((double)v))
                     {
@@ -4316,7 +4299,7 @@ namespace OfficeOpenXml
 		internal int GetStyleID(string StyleName)
 		{
 			ExcelNamedStyleXml namedStyle=null;
-            Workbook.Styles.NamedStyles.FindByKey(StyleName, ref namedStyle);
+            Workbook.Styles.NamedStyles.FindByID(StyleName, ref namedStyle);
             if (namedStyle.XfId == int.MinValue)
             {
                 namedStyle.XfId=Workbook.Styles.CellXfs.FindIndexByID(namedStyle.Style.Id);
@@ -4367,20 +4350,14 @@ namespace OfficeOpenXml
             }
         }
 
-        internal void UpdateCellsWithDate1904SettingChanged()
+        internal void UpdateCellsWithDate1904Setting()
         {
             var cse = new CellsStoreEnumerator<ExcelCoreValue>(_values);
-            //1900 to 1904 or 1904 to 1900
-            var offset = Workbook.Date1904 ? -ExcelWorkbook.date1904Offset.TotalDays : ExcelWorkbook.date1904Offset.TotalDays;
+            var offset = Workbook.Date1904 ? -ExcelWorkbook.date1904Offset : ExcelWorkbook.date1904Offset;
             while(cse.MoveNext())
             {
                 if (cse.Value._value is DateTime)
                 {
-                    //if(Workbook.Date1904){
-                    //  if(1899-12-31<cse.Value._value<1900-03-01){}
-                    //}else{
-                    //  if(){}
-                    //}
                     try
                     {
                         double sdv = ((DateTime)cse.Value._value).ToOADate();

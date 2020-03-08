@@ -35,8 +35,6 @@ using System.Globalization;
 using System.Text;
 using System.Xml;
 using System.Drawing;
-using System.Linq;
-
 namespace OfficeOpenXml.Style.XmlAccess
 {
     /// <summary>
@@ -234,8 +232,7 @@ namespace OfficeOpenXml.Style.XmlAccess
         {
             get
             {
-                //rake36: Use the format id defined by the index... not the index itself
-                return _styles.NumberFormats.FindAll().FirstOrDefault(item=>item.NumFmtId== _numFmtId);
+                return _styles.NumberFormats[_numFmtId < 0 ? 0 : _numFmtId];
             }
         }
         /// <summary>
@@ -774,7 +771,7 @@ namespace OfficeOpenXml.Style.XmlAccess
             if (styleProperty == eStyleProperty.Format)
             {
                 ExcelNumberFormatXml item=null;
-                if (!_styles.NumberFormats.FindByKey(value.ToString(), ref item))
+                if (!_styles.NumberFormats.FindByID(value.ToString(), ref item))
                 {
                     item = new ExcelNumberFormatXml(NameSpaceManager) { Format = value.ToString(), NumFmtId = _styles.NumberFormats.NextId++ };
                     _styles.NumberFormats.Add(value.ToString(), item);

@@ -40,23 +40,7 @@ namespace EPPlusSamples
 	{
 		static void Main(string[] args)
 		{
-
-            using (ExcelPackage package = new ExcelPackage(new FileInfo("D:/ImportFile/ACD-yyyy-MM-dd-1900Mode.xlsx"), true))
-            {
-                var worksheet = package.Workbook.Worksheets[1];//start index 1
-                var cell = worksheet.Cells[1,3];
-                var v = cell.Value;
-                var t = cell.Text;
-                var format = cell.Style.Numberformat.Format;
-
-                var cell1 = worksheet.Cells[2, 3];
-                var v1 = cell1.Value;
-                var t1 = cell1.Text;
-                var format1 = cell1.Style.Numberformat.Format;
-
-            }
-
-            try
+			try
 			{
                 //Sample 3, 4 and 12 uses the Adventureworks database. Enter the connectionstring to the Adventureworks database(2016 CTP3) into the variable below...
                 //Leave this blank if you don't have access to the Adventureworks database 
